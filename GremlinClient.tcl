@@ -53,6 +53,7 @@ oo::class create GremlinClient {
     variable sock
     variable params
     variable requestId
+    variable sessionId
 
     constructor {URL {USERNAME ""} {PASSWORD ""}} {
         set url $URL
@@ -61,6 +62,7 @@ oo::class create GremlinClient {
         set sock {}
         set params [dict create]
         set requestId {}
+        set sessionId {}
 
         # for WebSockets over TLS
         http::register https 443 [list ::tls::socket -ssl2 0 -ssl3 0 -tls1 1 -tls1.1 1 -tls1.2 1]
@@ -104,6 +106,10 @@ oo::class create GremlinClient {
 
     method disconnect {} {
         try {
+            if {[my isSessionOpen]==1} {
+                my closeSession
+            }
+
             ::websocket::close $sock 1000
         } finally {
             set sock {}
@@ -137,14 +143,25 @@ oo::class create GremlinClient {
         set requestId $id
         set mimetype "application/json"
         set length [binary format c [string length $mimetype]]
-        try { 
-            set msg  [::rl_json::json template {{"requestId":"~S:id",
-              "op":"eval",
-              "processor":"",
-              "args":{"gremlin":"~S:script",
-                      "bindings":"~T:paramstring",
-                      "language":"gremlin-groovy"}
-                   }} [list id $id script $script paramstring $paramstring]]
+        try {
+            if {[my isSessionOpen]==0} {
+                set msg  [::rl_json::json template {{"requestId":"~S:id",
+                "op":"eval",
+                "processor":"",
+                "args":{"gremlin":"~S:script",
+                        "bindings":"~T:paramstring",
+                        "language":"gremlin-groovy"}
+                    }} [list id $id script $script paramstring $paramstring]]
+            } else {
+                set msg  [::rl_json::json template {{"requestId":"~S:id",
+                "op":"eval",
+                "processor":"session",
+                "args":{"gremlin":"~S:script",
+                        "session" :"~S:sessionId",
+                        "bindings":"~T:paramstring",
+                        "language":"gremlin-groovy"}
+                    }} [list id $id script $script sessionId $sessionId paramstring $paramstring]]
+            }
 
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
@@ -177,6 +194,32 @@ oo::class create GremlinClient {
                       "@value" : [ "saslMechanism", "PLAIN", "sasl", "~S:authmessage" ]
                      }
                    }} [list id $id authmessage $authmessage]]
+            set finalmsg [string cat $length $mimetype $msg]
+        } on error {em} {
+            error $em
+        }
+
+        return $finalmsg
+    }
+
+    method genCloseSessionRequest {} {
+        variable id
+        variable msg
+        variable mimetype
+        variable length
+        variable finalmsg
+
+        set id $requestId
+        set mimetype "application/json"
+        set length [binary format c [string length $mimetype]]
+        try {
+            set msg  [::rl_json::json template {{"requestId":"~S:id",
+              "op":"close",
+              "processor":"session",
+              "args" : {
+                  "session" : "~S:sessionId"
+                    }
+                   }} [list id $id sessionId $sessionId]]
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
             error $em
@@ -279,5 +322,42 @@ oo::class create GremlinClient {
 
         set data [::rl_json::json extract $message result data]
         return $data
+    }
+
+    method getSession {} {
+        set sessionId [::uuid::uuid generate]
+    }
+
+    method isSessionOpen {} {
+        if {[string length $sessionId] > 0} {
+            return 1
+        }
+
+        return 0
+    }
+
+    method closeSession {} {
+        variable finalmsg
+        variable code
+
+        if {[my isSessionOpen]==1} {
+            if {[string compare [my isConnected] "CONNECTED"]!=0} {
+                error "Not CONNECTED state"
+            } else {
+                # Setup our message variable
+                set ::GremlinClient::message ""
+
+                try {
+                    set finalmsg [my genCloseSessionRequest]
+                    set code [my send $finalmsg]
+
+                    return $code
+                } on error {em} {
+                    error $em
+                }
+            }
+        }
+
+        set sessionId {}
     }
 }
