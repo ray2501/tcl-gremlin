@@ -36,6 +36,16 @@ Example
             204 {
                 puts "NO CONTENT"
             }
+            206 {
+                set data [$client getData]
+                while {$code!=200} {
+                    set code [$client getReceived]
+                    set moredata [$client getData]
+                    append data $moredata
+                }
+
+                puts $data
+            }
             401 {
                 puts "UNAUTHORIZED"
             }
