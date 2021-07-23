@@ -191,6 +191,9 @@ oo::class create GremlinClient {
        if {[catch {::websocket::send $sock binary $finalmsg}]} {
            error "send failed"
        } else {
+           # Clear params
+           set params [dict create]
+
            try {
                set code [my getReceived]
            } on error {em} {
