@@ -195,7 +195,7 @@ oo::class create GremlinClient {
                    }} [list id $id authmessage $authmessage]]
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
-            error "genAuthRequest $em"
+            error "genAuthRequest: $em"
         }
 
         return $finalmsg
@@ -221,7 +221,7 @@ oo::class create GremlinClient {
                    }} [list id $id sessionId $sessionId]]
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
-            error "genCloseSessionRequest $em"
+            error "genCloseSessionRequest: $em"
         }
 
         return $finalmsg
@@ -317,7 +317,7 @@ oo::class create GremlinClient {
         variable data
 
         set message $::GremlinClient::message
-        if {[string length message]==0} {
+        if {[string length $message]==0} {
             error "getData: No data"
         }
 
