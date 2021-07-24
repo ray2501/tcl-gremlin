@@ -17,6 +17,7 @@ Example
 =====
 
     package require GremlinClient
+    package require GraphSON3Parser
 
     set client [GremlinClient new ws://localhost:8182/gremlin]
     #set client [GremlinClient new wss://localhost:8182/gremlin "user" "passwd"]
@@ -31,7 +32,9 @@ Example
         switch $code {
             200 {
                 set data [$client getData]
-                puts $data
+
+                # Try to parse data
+                puts [::GraphSON3Parser::parse $data]
             } 
             204 {
                 puts "NO CONTENT"
@@ -44,7 +47,8 @@ Example
                     append data $moredata
                 }
 
-                puts $data
+                # Try to parse data
+                puts [::GraphSON3Parser::parse $data]
             }
             401 {
                 puts "UNAUTHORIZED"
