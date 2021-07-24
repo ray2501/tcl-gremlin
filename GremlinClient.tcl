@@ -164,7 +164,7 @@ oo::class create GremlinClient {
 
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
-            error $em
+            error "genRequest: $em"
         }
 
         return $finalmsg
@@ -195,7 +195,7 @@ oo::class create GremlinClient {
                    }} [list id $id authmessage $authmessage]]
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
-            error $em
+            error "genAuthRequest $em"
         }
 
         return $finalmsg
@@ -221,7 +221,7 @@ oo::class create GremlinClient {
                    }} [list id $id sessionId $sessionId]]
             set finalmsg [string cat $length $mimetype $msg]
         } on error {em} {
-            error $em
+            error "genCloseSessionRequest $em"
         }
 
         return $finalmsg
@@ -242,7 +242,7 @@ oo::class create GremlinClient {
        try {
            set code [my getReceived]
        } on error {em} {
-           error $em
+           error "send: $em"
        }
 
        return $code
@@ -253,17 +253,14 @@ oo::class create GremlinClient {
         variable code
 
         if {[string compare [my isConnected] "CONNECTED"]!=0} {
-            error "Not CONNECTED state"
+            error "submit: Not CONNECTED state"
         } else {
-            # Setup our message variable
-            set ::GremlinClient::message ""
-
             try {
                 set finalmsg [my genRequest $script]
                 set code [my send $finalmsg]
                 return $code
             } on error {em} {
-                error $em
+                error "submit: $em"
             }
         }
     }
@@ -273,7 +270,7 @@ oo::class create GremlinClient {
         variable code
 
         if {[string compare [my isConnected] "CONNECTED"]!=0} {
-            error "Not CONNECTED state"
+            error "authentication: Not CONNECTED state"
         } else {
             # Setup our message variable
             set ::GremlinClient::message ""
@@ -283,13 +280,16 @@ oo::class create GremlinClient {
                 set code [my send $finalmsg]
                 return $code
             } on error {em} {
-                error $em
+                error "authentication: $em"
             }
         }
     }
 
     method getReceived {} {
         variable code
+
+        # Setup our message variable
+        set ::GremlinClient::message ""
 
         set ::GremlinClient::received 0
         after 3000 [list apply {{varName} {
@@ -300,13 +300,13 @@ oo::class create GremlinClient {
         vwait ::GremlinClient::received
 
         set message $::GremlinClient::message
-        if {[string length message]==0} {
-            error "No data"
+        if {[string length $message]==0} {
+            error "getReceived: No data"
         }
 
         set rId [::rl_json::json get $message requestId]
         if {[string compare $requestId $rId]} {
-            error "Invalid requestId"
+            error "getReceived: Invalid requestId"
         }
 
         set code [::rl_json::json get $message status code]
@@ -318,7 +318,7 @@ oo::class create GremlinClient {
 
         set message $::GremlinClient::message
         if {[string length message]==0} {
-            error "No data"
+            error "getData: No data"
         }
 
         set data [::rl_json::json extract $message result data]
@@ -343,7 +343,7 @@ oo::class create GremlinClient {
 
         if {[my isSessionOpen]==1} {
             if {[string compare [my isConnected] "CONNECTED"]!=0} {
-                error "Not CONNECTED state"
+                error "closeSession: Not CONNECTED state"
             } else {
                 # Setup our message variable
                 set ::GremlinClient::message ""
@@ -354,7 +354,7 @@ oo::class create GremlinClient {
 
                     return $code
                 } on error {em} {
-                    error $em
+                    error "closeSession: $em"
                 }
             }
         }
