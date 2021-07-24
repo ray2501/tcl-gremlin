@@ -11,12 +11,11 @@ package require tls
 
 package provide GremlinClient 0.1
 
-set DEBUG 0
-
 #
 # Websocker handler
 #
 namespace eval ::GremlinClient {
+    variable DEBUG 0
     variable connected
     variable received
     variable message
@@ -24,14 +23,14 @@ namespace eval ::GremlinClient {
     proc handler { sock type msg } {
         switch -glob -nocase -- $type {
             co* {
-                if {$::DEBUG} {
+                if {$::GremlinClient::DEBUG} {
                     puts "Connected on $sock"
                 }
 
                 set ::GremlinClient::connected 1
             }
             bi* {
-                if {$::DEBUG} {
+                if {$::GremlinClient::DEBUG} {
                     puts "RECEIVED: $msg"
                 }
 
