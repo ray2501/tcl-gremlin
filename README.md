@@ -41,14 +41,16 @@ Example
             }
             206 {
                 set data [$client getData]
+                set parsedata [::GraphSON3Parser::parse $data]
+
                 while {$code!=200} {
                     set code [$client getReceived]
                     set moredata [$client getData]
-                    append data $moredata
+                    set moreparsedata [::GraphSON3Parser::parse $moredata]
+                    append parsedata $moreparsedata
                 }
 
-                # Try to parse data
-                puts [::GraphSON3Parser::parse $data]
+                puts $parsedata
             }
             401 {
                 puts "UNAUTHORIZED"
