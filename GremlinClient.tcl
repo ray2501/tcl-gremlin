@@ -85,6 +85,11 @@ oo::class create GremlinClient {
         }} ::GremlinClient::connected]
 
         vwait ::GremlinClient::connected
+        after cancel [list apply {{varName} {
+            if {![set $varName]} {
+                set $varName 0
+            }
+        }} ::GremlinClient::connected]
 
         if {[string compare [my isConnected] "CONNECTED"]!=0} {
             error "Connect failed"
@@ -298,6 +303,11 @@ oo::class create GremlinClient {
             }
         }} ::GremlinClient::received]
         vwait ::GremlinClient::received
+        after cancel [list apply {{varName} {
+            if {![set $varName]} {
+                set $varName 0
+            }
+        }} ::GremlinClient::received]
 
         set message $::GremlinClient::message
         if {[string length $message]==0} {
