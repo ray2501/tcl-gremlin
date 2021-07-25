@@ -18,6 +18,8 @@ TclOO, Tcllib websocket, Tcllib uuid,
 Example
 =====
 
+Connection:
+
     package require GremlinClient
     package require GraphSON3Parser
 
@@ -59,6 +61,47 @@ Example
             }
         }
 
+        $client disconnect
+    } on error {em} {
+        puts "Error: $em"
+    } finally {
+        $client destroy
+    }
+
+Gremlin Server supports sessions. With sessions, the user is in complete 
+control of the start and end of the transaction. I try to add related
+methods but I am not sure it is done.
+
+    package require GremlinClient
+    package require GraphSON3Parser
+
+    set client [GremlinClient new ws://localhost:8182/gremlin]
+    try {
+        $client connect
+        $client getSession
+        set code [$client submit "g.V().count()"]
+        switch $code {
+            200 {
+                set data [$client getData]
+                puts "Vertices: [::GraphSON3Parser::parse $data]"
+            }
+            204 {
+                puts "NO CONTENT"
+            }
+        }
+
+        set code [$client submit "g.E().count()"]
+        switch $code {
+            200 {
+                set data [$client getData]
+                puts "Edges: [::GraphSON3Parser::parse $data]"
+            }
+            204 {
+                puts "NO CONTENT"
+            }
+        }
+
+        $client closeSession
         $client disconnect
     } on error {em} {
         puts "Error: $em"
