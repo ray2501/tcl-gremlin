@@ -9,7 +9,7 @@ package require uuid
 package require rl_json
 package require tls
 
-package provide GremlinClient 0.1
+package provide GremlinClient 0.2
 
 #
 # Websocket handler

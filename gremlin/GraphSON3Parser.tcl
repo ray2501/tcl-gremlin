@@ -1,6 +1,6 @@
 package require rl_json
 
-package provide GraphSON3Parser 0.1
+package provide GraphSON3Parser 0.2
 
 #
 # GraphSON is a JSON-based format that is designed for human readable output 
