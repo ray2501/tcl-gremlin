@@ -5,15 +5,14 @@ It is a Gremlin Server driver for Tcl, and supports PLAIN
 SASL (username/password) authentication mechanism.
 
 [Gremlin](https://tinkerpop.apache.org/gremlin.html) is the graph traversal 
-language of [Apache TinkerPop](https://tinkerpop.apache.org/).
+and query language of [Apache TinkerPop](https://tinkerpop.apache.org/).
 Apache TinkerPop is a graph computing framework for both graph databases 
 (OLTP) and graph analytic systems (OLAP).
 
-This package requires Tcl >= 8.6, TclOO, Tcllib websocket, Tcllib uuid,
+This package requires [Tcl](https://www.tcl.tk/) >= 8.6, 
+TclOO, Tcllib websocket, Tcllib uuid,
 [rl_json](https://github.com/RubyLane/rl_json) and 
 [TclTLS](https://core.tcl-lang.org/tcltls/home) package.
-
-This project is under early development stage.
 
 
 Example
