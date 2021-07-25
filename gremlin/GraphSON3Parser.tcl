@@ -3,7 +3,11 @@ package require rl_json
 package provide GraphSON3Parser 0.1
 
 #
-# GraphSON Version 3.0 parser
+# GraphSON is a JSON-based format that is designed for human readable output 
+# that is easily supported in any programming language through the wide-array 
+# of JSON parsing libraries that exist on virtually all platforms.
+#
+# It is a GraphSON Version 3.0 parser to parse Gremlin Server output.
 # 
 namespace eval ::GraphSON3Parser {
     variable supportType [list \
