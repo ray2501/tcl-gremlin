@@ -12,7 +12,7 @@ package require tls
 package provide GremlinClient 0.1
 
 #
-# Websocker handler
+# Websocket handler
 #
 namespace eval ::GremlinClient {
     variable DEBUG 0
