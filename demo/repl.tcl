@@ -6,6 +6,11 @@
 package require GremlinClient
 package require GraphSON3Parser
 
+set isLinenoise 0
+if {[catch {package require linenoise}]==0} {
+    set isLinenoise 1
+}
+
 set client [GremlinClient new ws://localhost:8182/gremlin]
 try {
     $client connect
@@ -18,9 +23,14 @@ puts "Please input exit or quit to leave."
 puts ""
 
 while {1} {
-    puts -nonewline stdout "Gremlin> "
-    flush stdout
-    gets stdin query
+    if {$isLinenoise == 0} {
+        puts -nonewline stdout "Gremlin> "
+        flush stdout
+        gets stdin query
+    } else {
+        set query [linenoise prompt \
+               -prompt "\033\[1;33mGremlin\033\[0m> "]
+    }
 
     switch $query {
         "exit" -
