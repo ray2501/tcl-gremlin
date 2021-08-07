@@ -1,6 +1,6 @@
 #!/usr/bin/tclsh
 #
-# Is is a simple program to verify tcl-gremlin package
+# It is a simple program to verify tcl-gremlin package
 #
 
 package require GremlinClient
