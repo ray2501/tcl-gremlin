@@ -2,7 +2,7 @@
 # A Gremlin Server driver for Tcl.
 # Gremlin client in Tcl for the WebSocketChannelizer.
 #
-package require Tcl 8.6
+package require Tcl 8.6-
 package require TclOO
 package require websocket
 package require uuid
