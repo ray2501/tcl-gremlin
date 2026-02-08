@@ -9,7 +9,7 @@ package require uuid
 package require rl_json
 package require tls
 
-package provide GremlinClient 0.2
+package provide GremlinClient 0.3
 
 #
 # Websocket handler
@@ -64,7 +64,10 @@ oo::class create GremlinClient {
         set sessionId {}
 
         # for WebSockets over TLS
-        http::register https 443 [list ::tls::socket -ssl2 0 -ssl3 0 -tls1 1 -tls1.1 1 -tls1.2 1]
+        set protocol "http/1.1"
+        http::register https 443 [list ::tls::socket -autoservername 1 \
+                                  -require 0 -alpn \
+                                  [list [string tolower $protocol]]]
     }
 
     destructor {
