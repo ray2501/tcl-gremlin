@@ -1,14 +1,14 @@
 #!/usr/bin/tclsh
 
 set arch "noarch"
-set base "tcl-gremlin-0.2"
+set base "tcl-gremlin-0.3"
 
 set var2 [list git clone https://github.com/ray2501/tcl-gremlin.git $base]
 exec >@stdout 2>@stderr {*}$var2
 
 cd $base
 
-set var2 [list git checkout e3257f5942a4b8dab1bc509cfda34a1e1b0fe9b4]
+set var2 [list git checkout e573b7735a113c66d8f6c6bf5c0bda5692a707d5]
 exec >@stdout 2>@stderr {*}$var2
 
 set var2 [list git reset --hard]

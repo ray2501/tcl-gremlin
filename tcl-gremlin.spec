@@ -7,7 +7,7 @@
 
 Name:          tcl-gremlin
 Summary:       Gremlin Server driver for Tcl 
-Version:       0.2
+Version:       0.3
 Release:       0
 License:       MIT
 Group:         Development/Libraries/Tcl
